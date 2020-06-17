@@ -19,7 +19,7 @@ public class SessaoController {
 	private FilmeDao filmeDao;
 
 	@GetMapping("/admin/sessao")
-	public ModelAndView form(@RequestParam("SalaId") Integer salaId) {
+	public ModelAndView form(@RequestParam("salaId") Integer salaId) {
 
 		ModelAndView mav = new ModelAndView("sessao/sessao");
 
