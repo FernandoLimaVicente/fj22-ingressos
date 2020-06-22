@@ -31,7 +31,7 @@ public class SessaoController {
 
 	@Autowired
 	private SessaoDao sessaoDao;
-	
+
 	@GetMapping("/admin/sessao")
 	public ModelAndView form(@RequestParam("salaId") Integer salaId, SessaoForm form) {
 
@@ -43,33 +43,24 @@ public class SessaoController {
 
 		return mav;
 	}
-	
+
 	@PostMapping(value = "/admin/sessao")
 	@Transactional
 	public ModelAndView salva(@Valid SessaoForm form, BindingResult result) {
-		
-		System.out.println("Entrei no salva...");
-		
-		if(result.hasErrors())
-			return form(form.getSalaId(),form);
-		
-		System.out.println("passei o primeiro if");
-		
+
+		if (result.hasErrors())
+			return form(form.getSalaId(), form);
+
 		Sessao sessao = form.toSessao(salaDao, filmeDao);
 		List<Sessao> sessoes = sessaoDao.buscaSessoesDeSala(sessao.getSala());
 		GerenciadorDeSessao gds = new GerenciadorDeSessao(sessoes);
-		
-		System.out.println("Passei a inicialização das variaveis");
-		
-		if(gds.cabe(sessao)) {
-			System.out.println("A sessao cabe....");
-			sessaoDao.save(form.toSessao(salaDao, filmeDao));	
-			return new ModelAndView("redirect:/admin/sala/" + form.getSalaId() + "/sessoes");		
+
+		if (gds.cabe(sessao)) {
+			sessaoDao.save(form.toSessao(salaDao, filmeDao));
+			return new ModelAndView("redirect:/admin/sala/" + form.getSalaId() + "/sessoes");
 		}
-		
-		System.out.println("Acho que a sessão nao cabe");
-		
-		return form(form.getSalaId(),form);
+
+		return form(form.getSalaId(), form);
 	}
 
 }
