@@ -1,5 +1,7 @@
 package br.com.caelum.ingresso.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,9 @@ import org.springframework.web.servlet.ModelAndView;
 import br.com.caelum.ingresso.dao.FilmeDao;
 import br.com.caelum.ingresso.dao.SalaDao;
 import br.com.caelum.ingresso.dao.SessaoDao;
+import br.com.caelum.ingresso.model.Sessao;
 import br.com.caelum.ingresso.model.form.SessaoForm;
+import br.com.caelum.ingresso.validacao.GerenciadorDeSessao;
 
 @Controller
 public class SessaoController {
@@ -44,12 +48,28 @@ public class SessaoController {
 	@Transactional
 	public ModelAndView salva(@Valid SessaoForm form, BindingResult result) {
 		
+		System.out.println("Entrei no salva...");
+		
 		if(result.hasErrors())
 			return form(form.getSalaId(),form);
 		
-		sessaoDao.save(form.toSessao(salaDao, filmeDao));
+		System.out.println("passei o primeiro if");
 		
-		return new ModelAndView("redirect:/admin/sala/" + form.getSalaId() + "/sessoes");
+		Sessao sessao = form.toSessao(salaDao, filmeDao);
+		List<Sessao> sessoes = sessaoDao.buscaSessoesDeSala(sessao.getSala());
+		GerenciadorDeSessao gds = new GerenciadorDeSessao(sessoes);
+		
+		System.out.println("Passei a inicialização das variaveis");
+		
+		if(gds.cabe(sessao)) {
+			System.out.println("A sessao cabe....");
+			sessaoDao.save(form.toSessao(salaDao, filmeDao));	
+			return new ModelAndView("redirect:/admin/sala/" + form.getSalaId() + "/sessoes");		
+		}
+		
+		System.out.println("Acho que a sessão nao cabe");
+		
+		return form(form.getSalaId(),form);
 	}
-	
+
 }
