@@ -1,5 +1,6 @@
 package br.com.caelum.ingresso.validacao;
 
+import java.math.BigDecimal;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
@@ -11,10 +12,10 @@ public class TestaStream {
 
 	public static void main(String[] args) {
 
-		Filme f1 = new Filme("Terminator", Duration.ofMinutes(119), "Acao");
-		Filme f2 = new Filme("Die Hard", Duration.ofMinutes(119), "Acao");
-		Filme f3 = new Filme("Predator", Duration.ofMinutes(119), "Ficcao");
-		Filme f4 = new Filme("Alien", Duration.ofMinutes(119), "Ficcao");
+		Filme f1 = new Filme("Terminator", Duration.ofMinutes(119), "Acao", BigDecimal.ONE);
+		Filme f2 = new Filme("Die Hard", Duration.ofMinutes(119), "Acao", BigDecimal.ONE);
+		Filme f3 = new Filme("Predator", Duration.ofMinutes(119), "Ficcao", BigDecimal.ONE);
+		Filme f4 = new Filme("Alien", Duration.ofMinutes(119), "Ficcao", BigDecimal.ONE);
 
 		List<Filme> filmes = Arrays.asList(f1, f2, f3, f4);
 
