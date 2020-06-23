@@ -18,7 +18,6 @@ public class DescontoTest {
 	private Ingresso ingresso;
 	private Sessao sessao;
 	
-	
 	@Before
 	public void preparaDesconto() {
 		
@@ -33,8 +32,7 @@ public class DescontoTest {
 
 		sessao = new Sessao(LocalTime.parse("10:00:00"), filme, sala);
 	}
-	
-	
+		
 	@Test
 	public void naoDeveConcederDescontoParaIngressoNormal() {
 		ingresso = new Ingresso(sessao, new SemDesconto());
@@ -42,7 +40,6 @@ public class DescontoTest {
 		
 		Assert.assertEquals(precoEsperado, ingresso.getPreco());
 	}
-	
 	
 	@Test
 	public void deveConcederDescontoDe30PorcentoParaIngressosDeClientesDeBancos() {
