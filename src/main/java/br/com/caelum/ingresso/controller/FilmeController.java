@@ -29,89 +29,84 @@ import br.com.caelum.ingresso.rest.OmdbClient;
 @Controller
 public class FilmeController {
 
+	@Autowired
+	private FilmeDao filmeDao;
 
-    @Autowired
-    private FilmeDao filmeDao;
+	@Autowired
+	private SessaoDao sessaoDao;
 
-    @Autowired
-    private SessaoDao sessaoDao;
+	@Autowired
+	private OmdbClient omdbClient;
 
-    @Autowired
-    private OmdbClient omdbClient;
-    
-    @GetMapping({"/admin/filme", "/admin/filme/{id}"})
-    public ModelAndView form(@PathVariable("id") Optional<Integer> id, Filme filme){
+	@GetMapping({ "/admin/filme", "/admin/filme/{id}" })
+	public ModelAndView form(@PathVariable("id") Optional<Integer> id, Filme filme) {
 
-        ModelAndView modelAndView = new ModelAndView("filme/filme");
+		ModelAndView modelAndView = new ModelAndView("filme/filme");
 
-        if (id.isPresent()){
-            filme = filmeDao.findOne(id.get());
-        }
+		if (id.isPresent()) {
+			filme = filmeDao.findOne(id.get());
+		}
 
-        modelAndView.addObject("filme", filme);
+		modelAndView.addObject("filme", filme);
 
-        return modelAndView;
-    }
+		return modelAndView;
+	}
 
+	@PostMapping("/admin/filme")
+	@Transactional
+	public ModelAndView salva(@Valid Filme filme, BindingResult result) {
 
-    @PostMapping("/admin/filme")
-    @Transactional
-    public ModelAndView salva(@Valid Filme filme, BindingResult result){
+		if (result.hasErrors()) {
+			return form(Optional.ofNullable(filme.getId()), filme);
+		}
 
-        if (result.hasErrors()) {
-            return form(Optional.ofNullable(filme.getId()), filme);
-        }
+		filmeDao.save(filme);
 
-        filmeDao.save(filme);
+		ModelAndView view = new ModelAndView("redirect:/admin/filmes");
 
-        ModelAndView view = new ModelAndView("redirect:/admin/filmes");
+		return view;
+	}
 
-        return view;
-    }
+	@GetMapping(value = "/admin/filmes")
+	public ModelAndView lista() {
 
+		ModelAndView modelAndView = new ModelAndView("filme/lista");
 
-    @GetMapping(value="/admin/filmes")
-    public ModelAndView lista(){
+		modelAndView.addObject("filmes", filmeDao.findAll());
 
-        ModelAndView modelAndView = new ModelAndView("filme/lista");
+		return modelAndView;
+	}
 
-        modelAndView.addObject("filmes", filmeDao.findAll());
+	@DeleteMapping("/admin/filme/{id}")
+	@ResponseBody
+	@Transactional
+	public void delete(@PathVariable("id") Integer id) {
+		filmeDao.delete(id);
+	}
 
-        return modelAndView;
-    }
+	@GetMapping("/filme/em-cartaz")
+	public ModelAndView emCartaz() {
 
+		ModelAndView mav = new ModelAndView("filme/em-cartaz");
+		mav.addObject("filmes", filmeDao.findAll());
 
-    @DeleteMapping("/admin/filme/{id}")
-    @ResponseBody
-    @Transactional
-    public void delete(@PathVariable("id") Integer id){
-        filmeDao.delete(id);
-    }
+		return mav;
+	}
 
-    
-    @GetMapping("/filme/em-cartaz")
-    public ModelAndView emCartaz () {
-    	
-    	ModelAndView mav = new ModelAndView("filme/em-cartaz");
-    	mav.addObject("filmes",filmeDao.findAll());
-    	
-    	return mav;
-    }
-    
-    @GetMapping("/filme/{id}/detalhe")
-    public ModelAndView detalhes(@PathVariable("id") Integer id) {
-    	ModelAndView mav = new ModelAndView("filme/detalhe");
-    	
-    	Filme filme = filmeDao.findOne(id);
-    	List<Sessao> sessoes = sessaoDao.buscaSessoesDoFilme(filme);
- 
-    	Optional<DetalhesDoFilme> ddf = omdbClient.request(filme);
-    	
-    	mav.addObject("sessoes",sessoes);
-    	mav.addObject("detalhes", ddf.orElse(new DetalhesDoFilme()));
-    	
-    	return mav;
-    	
-    }
-    
+	@GetMapping("/filme/{id}/detalhe")
+	public ModelAndView detalhes(@PathVariable("id") Integer id) {
+		ModelAndView mav = new ModelAndView("filme/detalhe");
+
+		Filme filme = filmeDao.findOne(id);
+		List<Sessao> sessoes = sessaoDao.buscaSessoesDoFilme(filme);
+
+		Optional<DetalhesDoFilme> ddf = omdbClient.request(filme, DetalhesDoFilme.class);
+
+		mav.addObject("sessoes", sessoes);
+		mav.addObject("detalhes", ddf.orElse(new DetalhesDoFilme()));
+
+		return mav;
+
+	}
+
 }
