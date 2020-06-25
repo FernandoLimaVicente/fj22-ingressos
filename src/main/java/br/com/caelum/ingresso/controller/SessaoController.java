@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import br.com.caelum.ingresso.dao.FilmeDao;
 import br.com.caelum.ingresso.dao.SalaDao;
 import br.com.caelum.ingresso.dao.SessaoDao;
+import br.com.caelum.ingresso.model.Carrinho;
 import br.com.caelum.ingresso.model.ImagemCapa;
 import br.com.caelum.ingresso.model.Sessao;
 import br.com.caelum.ingresso.model.TipoDeIngresso;
@@ -31,6 +32,9 @@ public class SessaoController {
 	@Autowired
 	private SalaDao salaDao;
 
+	@Autowired
+	private Carrinho carrinho;
+	
 	@Autowired
 	private FilmeDao filmeDao;
 
@@ -80,6 +84,7 @@ public class SessaoController {
 		Optional<ImagemCapa> im = oClient.request(sessao.getFilme(), ImagemCapa.class);
 
 		mav.addObject("sessao", sessao);
+		mav.addObject("carrinho",carrinho);
 		mav.addObject("imagemCapa", im.orElse(new ImagemCapa()));
 		mav.addObject("tiposDeIngressos", TipoDeIngresso.values());
 

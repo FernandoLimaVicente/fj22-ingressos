@@ -52,7 +52,7 @@ public class Sessao {
 	public boolean isDisponivel(Lugar lugar) {
 		return ingressos.stream()
 				.map(Ingresso::getLugar)
-				.noneMatch(l -> lugar.equals(lugar));
+				.noneMatch(l -> l.equals(lugar));
 	}
 	
 	
